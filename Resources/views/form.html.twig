@@ -1,0 +1,13 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}Upload{% endblock%}
+
+{% block content %}
+   <form action="{{ post_url }}" method="POST" {{ form_enctype(form) }}>
+       <fieldset>
+        <legend>{{title}}</legend>
+           {{ form_widget(form) }}
+        <input type="submit" value="Submit">
+       </fieldset>
+    </form> 
+{% endblock %}    

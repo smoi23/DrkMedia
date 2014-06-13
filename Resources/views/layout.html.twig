@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="{{ app.request.basepath }}/css/page.css" type="text/css" rel="stylesheet" />
+{% endblock %}
+
+{% block container %}
+<header id="content-header">
+    <div class="top">
+        {% block navigation %}
+            <nav>
+                <ul class="navigation">
+     				<li><a href="{{ path('media/show') }}">Browse</a></li>
+     				<li><a href="{{ path('upload') }}">Upload</a></li>
+                    <li><a href="{{ path('about') }}">About</a></li>
+                </ul>
+            </nav>
+        {% endblock %}
+    </div>
+</header>
+<section id="content-main">
+    {% block content %}{% endblock %}
+</section>
+<div id="footer">
+         <a href="http://www.drkstr.de" target="_blank">This is it. &copy; 2041</a>
+</div>
+{% endblock %}
+ 

@@ -1,0 +1,22 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}RWM Media{% endblock%}
+
+{% block content %}
+
+<article class="media">
+    <header>
+        <div class="date"><time datetime="{{ media.publicDate|date('c') }}">{{ media.publicDate|date('l, j F, Y') }}</time></div>
+        <h2>{{ media.title }}</h2>
+    </header>
+    <div>
+    {% for key,val in props %}
+        <div>{{ key }}: {{ val }}</div>
+    {% endfor %}
+    </div>
+    <div>
+    
+    </div>
+</article>
+    
+{% endblock %}    

@@ -1,0 +1,17 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}RWM Media{% endblock%}
+
+{% block content %}
+
+<article class="media">
+	    {% for val in props %}
+		    <div id="entry">
+	        <a href="{{ path('media/show') }}/{{ val.id }}">{{ val.id }}: {{ val.filename }}</a>
+	        <div class="date"><time datetime="{{ val.publicDate|date('c') }}">{{ val.publicDate|date('l, j F, Y') }}</time></div>
+	        <p></p>
+    		</div>
+	    {% endfor %}
+</article>
+    
+{% endblock %}    
