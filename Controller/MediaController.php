@@ -60,7 +60,13 @@ class MediaController
 	{
 		
 		$media = $app['orm.em']->getRepository('DrkMedia\Entity\MediaEntity')->find($id);
-			
+
+		if (!$media)
+		{
+			throw $this->createNotFoundException('Unable to find Media post.');
+		}
+		
+		
 		$props = $media->getPropertyArray();
 				
 		$data = array(
@@ -75,69 +81,46 @@ class MediaController
 
 	public function newAction(Request $request, Application $app)
 	{
-
 		$filename = $request->query->get('filename');
 			
-		if (!$filename)
-		{
-			return "asd";
-		}
-		
-		
-		$media = new MediaEntity();
-		
-
+		$media = new MediaEntity();	
 		$media->setFilename($filename);
 		
 		// populate with metadata
 		$metaData = new MetaData(WEB_DIRECTORY.'/stage/'.$filename);
-		$metaData->parse();
-		
+		$metaData->parse();		
 		if ($metaData->fileInfo)
 		{
 			$media->parseFileInfo($metaData->fileInfo['comments']);
 		}
-				
+		
 		return $this->editAction($request, $app, NULL, $media);
-		
-		
 	}
 	
 	
 	public function editAction(Request $request, Application $app, $id=NULL, $media=NULL)
-	{
-
-		
+	{		
 		if ($id)
-		{
+		{	
 			// get media from db				
-		}
+			$media = $app['orm.em']->getRepository('DrkMedia\Entity\MediaEntity')->find($id);
+			
+			if (!$media) 
+			{
+				throw $this->createNotFoundException('Unable to find Media post.');
+			}			
 		
-		$form = $app['form.factory']->create(new MediaType(), $media);
-				
-		if (1==0 && $request->isMethod('POST')) {
-			$form->bind($request);
-			if ($form->isValid()) {
-				/*
-				$app['repository.artist']->save($artist);
-				$message = 'The artist ' . $artist->getName() . ' has been saved.';
-				$app['session']->getFlashBag()->add('success', $message);
-				// Redirect to the edit page.
-				$redirect = $app['url_generator']->generate('admin_artist_edit', array('artist' => $artist->getId()));
-				
-				return $app->redirect($redirect);
-				*/
-			}
 		}
+				
+		$form = $app['form.factory']->create(new MediaType(), $media);			
 
 		$data = array(
 				'form' => $form->createView(),
 				'title' => 'Info',
-				'post_url' => 'media',
+				'post_url' => $app['url_generator']->generate('media/post'),
 		);
 		
 		return $app['twig']->render('form.html.twig', $data);
-
 	}
 	
 	
@@ -149,19 +132,29 @@ class MediaController
 		$form = $app['form.factory']->create(new MediaType(), $media);
 		$form->handleRequest($request);
 		
-		
-		$fileSource = WEB_DIRECTORY.'/stage/'.$media->getFilename();
-
-						
-		// move file to upload location
-		$file = new File($fileSource);
-		$file->move(WEB_DIRECTORY.'/upload/');
-		
-		// insert in db
-		$app['orm.em']->persist($media);
-		$app['orm.em']->flush();
+		if ($media->getId() > 0)
+		{
+			// update
+			$media_db = $app['orm.em']->getRepository('DrkMedia\Entity\MediaEntity')->find($media->getId());
+			$media_db->import($media);
+			$props = $media_db->getPropertyArray();
+			$app['orm.em']->flush();
+		}
+		else
+		{		
+			// add new
+			$fileSource = WEB_DIRECTORY.'/stage/'.$media->getFilename();
+	
+			// move file to upload location
+			$file = new File($fileSource);
+			$file->move(WEB_DIRECTORY.'/upload/');
 			
-		
+			// insert in db
+			$app['orm.em']->persist($media);
+			$app['orm.em']->flush();
+			
+		}
+
 		return $this->viewAction($request, $app, $media->getId());
 	}
 

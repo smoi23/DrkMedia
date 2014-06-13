@@ -16,7 +16,7 @@ class MediaEntity
 	 *  @GeneratedValue
 	 *  @GeneratedValue(strategy="AUTO")
 	 */
-	protected $id;
+	protected $id=0;
 	/** @Column(length=128) */
 	protected $filename;
 	/** @Column(length=128) */
@@ -243,6 +243,14 @@ class MediaEntity
 		return $props;
 		
 	}	
+	
+	public function import(MediaEntity $i_object)
+	{
+		foreach (get_object_vars($i_object) as $key => $value)
+		{
+			$this->$key = $value;
+		}		
+	}
 	
 	private function filterBlackList(&$i_array)
 	{
