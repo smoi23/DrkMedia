@@ -231,7 +231,6 @@ class MediaEntity
 		
 		if (isset($fileInfo['album']))
 		{
-			echo $fileInfo['album'];
 			$this->album = $fileInfo['album'][0];
 		}
 	}

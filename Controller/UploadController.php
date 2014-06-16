@@ -26,27 +26,26 @@ class UploadController
 		if ($request->isMethod('POST'))
 		{
 			$form->bind($request);
-			if ($form->isValid()) {
-
-				
+			if ($form->isValid()) 
+			{
 				$files = $request->files->get($form->getName());
 				$path = WEB_DIRECTORY.'/stage/';
 				$filename = $files['file']->getClientOriginalName();
 				$files['file']->move($path,$filename);
-
-				$subRequest = Request::create('/media/new', 'GET', array('filename'=>$filename) );
-				return $app->handle($subRequest, HttpKernelInterface::SUB_REQUEST, false);
+								
+				// $subRequest = Request::create($url, 'GET', array('filename'=>$filename) );
+				// return $app->handle($subRequest, HttpKernelInterface::SUB_REQUEST, false);
 				
 				// If you are using UrlGeneratorProvider, you can also generate the URI:
-				//$subRequest = Request::create($app['url_generator']->generate('media'), 'GET');
-				//return $app->handle($subRequest, HttpKernelInterface::SUB_REQUEST);
-				
+				$subRequest = Request::create($app['url_generator']->generate('media/new'), 'GET', array('filename'=>$filename) );
+				return $app->handle($subRequest, HttpKernelInterface::SUB_REQUEST);				
 			}	
 		}
 		
-		
 		return $app['twig']->render('form.html.twig', array(	'form' => $form->createView(),
-																'title' => 'Upload',));
+																'title' => 'Upload',
+																'post_url' => $app['url_generator']->generate('upload'),
+		));
 			
 	}	
 	

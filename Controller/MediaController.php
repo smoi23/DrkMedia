@@ -80,9 +80,9 @@ class MediaController
 	}
 
 	public function newAction(Request $request, Application $app)
-	{
+	{	
 		$filename = $request->query->get('filename');
-			
+
 		$media = new MediaEntity();	
 		$media->setFilename($filename);
 		
@@ -147,7 +147,7 @@ class MediaController
 	
 			// move file to upload location
 			$file = new File($fileSource);
-			$file->move(WEB_DIRECTORY.'/upload/');
+			$file->move(WEB_DIRECTORY.'/data/');
 			
 			// insert in db
 			$app['orm.em']->persist($media);
