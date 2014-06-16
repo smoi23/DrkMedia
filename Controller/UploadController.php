@@ -33,11 +33,14 @@ class UploadController
 				$filename = $files['file']->getClientOriginalName();
 				$files['file']->move($path,$filename);
 								
-				// $subRequest = Request::create($url, 'GET', array('filename'=>$filename) );
-				// return $app->handle($subRequest, HttpKernelInterface::SUB_REQUEST, false);
-				
+				// create url direct
+				//$url = $request->getUriForPath('/media/new');				
+				//$subRequest = Request::create($url, 'GET', array('filename'=>$filename) );
+
 				// If you are using UrlGeneratorProvider, you can also generate the URI:
 				$subRequest = Request::create($app['url_generator']->generate('media/new'), 'GET', array('filename'=>$filename) );
+                $subRequest->server->set('SCRIPT_NAME', $app['request']->server->get('SCRIPT_NAME'));
+                $subRequest->server->set('SCRIPT_FILENAME', $app['request']->server->get('SCRIPT_FILENAME'));
 				return $app->handle($subRequest, HttpKernelInterface::SUB_REQUEST);				
 			}	
 		}
