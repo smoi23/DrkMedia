@@ -45,7 +45,7 @@ class UploadController
 			}	
 		}
 		
-		return $app['twig']->render('form.html.twig', array(	'form' => $form->createView(),
+		return $app['twig']->render('upload.html.twig', array(	'form' => $form->createView(),
 																'title' => 'Upload',
 																'post_url' => $app['url_generator']->generate('upload'),
 		));

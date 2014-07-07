@@ -10,14 +10,7 @@
    <form action="{{ post_url }}" method="POST" {{ form_enctype(form) }}>
        <fieldset>
         <legend>{{title}}</legend>
-			<ul class="detailform" data-prototype="{{ form_widget(form.tags.vars.prototype)|e }}">
-		    <h1>Details</h1>
-	        {% for tag in form.tags %}
-	            {{ form_widget(tag) }}
-	        {% endfor %}
-		    <h1>Main</h1>
            {{ form_widget(form) }}
-			</ul>
         <input type="submit" value="Submit">
        </fieldset>
     </form> 

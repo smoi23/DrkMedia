@@ -3,6 +3,7 @@ namespace DrkMedia\Entity;
 
 
 use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @Entity
@@ -19,6 +20,10 @@ class MediaEntity
 	protected $id=0;
 	/** @Column(length=128) */
 	protected $filename;
+	/** @Column(type="datetime")*/
+	protected $created;
+	/** @Column(type="datetime")*/
+	protected $modified;
 	/** @Column(length=128) */
 	protected $name;
 	/** @Column(length=128) */
@@ -43,7 +48,7 @@ class MediaEntity
 	protected $albumNumberMax;
 	/** @Column(type="smallint") */
 	protected $signature;
-	/** @Column(type="datetime")*/
+	/** @Column(type="time")*/
 	protected $time;
 	/** @Column(length=128) */
 	protected $label;
@@ -52,13 +57,33 @@ class MediaEntity
 	/** 
 	 * @Column(type="date")
 	 * @Assert\Date()
-	 * */
-	protected $publicDate;
-	
+	 */
+	protected $published;
 	
 	protected  $blacklist = array(	0=>'blacklist',
-									1=>'time',
-									2=>'publicDate');
+									1=>'created',
+									2=>'modified',
+									3=>'time',
+									4=>'tags',
+									5=>'published');
+		
+	/*
+	 * orphanRemoval: Boolean that specifies if orphans, inverse OneToOne entities that are not connected to any owning instance, should be removed by Doctrine. Defaults to false.
+	 */	
+    /**
+	 * @OneToMany(targetEntity="Detail", mappedBy="media", cascade={"persist", "remove"}, orphanRemoval=true)
+     **/	
+	protected $tags;
+	
+	public function __construct()
+	{
+		$this->initialize();		
+	}
+	
+	public function initialize()
+	{
+		$this->tags = new ArrayCollection();
+	}
 	
 	public function getId() {
 		return $this->id;
@@ -78,7 +103,25 @@ class MediaEntity
 	{
 		$this->filename = $filename;
 	}
+
+	public function getCreated() {
+		return $this->created;
+	}
 	
+	public function setCreated($datetime)
+	{
+		$this->created = $datetime;
+	}
+
+	public function getModified() {
+		return $this->modified;
+	}
+	
+	public function setModified($datetime)
+	{
+		$this->modified = $datetime;
+	}
+		
 	public function getName() {
 		return $this->name;
 	}
@@ -88,6 +131,7 @@ class MediaEntity
 		$this->name = $name;
 	}
 	
+
 	public function getTitleA() {
 		return $this->titleA;
 	}
@@ -105,6 +149,7 @@ class MediaEntity
 	{
 		$this->titleB = $title;
 	}
+
 	
 	public function getSubTitle() {
 		return $this->subTitle;
@@ -215,14 +260,37 @@ class MediaEntity
 		$this->location = $loc;
 	}
 	
-	public function getPublicDate() {
-		return $this->publicDate;
+	public function getPublished() {
+		return $this->published;
 	}
 	
-	public function setPublicDate($date)
+	public function setPublished($date)
 	{
-		$this->publicDate = $date;
+		$this->published = $date;
 	}
+		
+	public function getTags()
+	{
+		return $this->tags;
+	}
+
+	public function setTags(\Doctrine\Common\Collections\ArrayCollection $tags)
+	{
+		$this->tags = $tags;
+		$this->updateTags();
+	}
+	
+	
+	public function addTag(Detail $tag)
+	{
+		$tag->setMedia($this);
+		$this->tags->add($tag);
+	}
+	
+	public function removeTag(Detail $tag)
+	{
+		$this->tags->removeElement($tag);	
+	}	
 	
 	public function parseFileInfo($fileInfo)
 	{
@@ -238,7 +306,9 @@ class MediaEntity
 	public function getPropertyArray()
 	{
 		$props = get_object_vars($this);
+		
 		$this->filterBlackList($props);
+		
 		return $props;
 		
 	}	
@@ -247,9 +317,62 @@ class MediaEntity
 	{
 		foreach (get_object_vars($i_object) as $key => $value)
 		{
-			$this->$key = $value;
+			if ($value != null)
+			{
+				$this->$key = $value;
+				if (is_object($value) && get_class($value)=="DateTime")
+				{
+					echo "<p>Update: ".$key." with: ".$value->format('Y-m-d H:i:s')."</p>";					
+				}
+				else
+				{
+					echo "<p>Update: ".$key." with: ".$value."</p>";
+				}
+			}
 		}		
 	}
+
+	
+	public function importTags(MediaEntity $i_media)
+	{
+		foreach ($i_media->getTags() as $tag)
+		{
+			if ($tag->getId() === null)
+			{
+				$_tag = null;				
+			}
+			else 
+			{
+				$_tag = $this->getTagById($tag->getId());
+			}
+						
+			if ($_tag == null)
+			{
+				// echo "<p>Add tag: ".$tag->getId()."</p>";
+				$this->addTag($tag);
+			}
+			else
+			{
+				// echo "<p>Update tag: ".$tag->getId()."</p>";
+				$_tag->import($tag);
+			}
+		
+		}
+	}
+		
+	
+	public function getTagById($_id)
+	{
+		foreach($this->tags as $tag)
+		{
+			if ($tag->getId() == $_id)
+			{
+				return $tag;
+			}
+		}
+		return null;
+	}
+	
 	
 	private function filterBlackList(&$i_array)
 	{
@@ -262,5 +385,13 @@ class MediaEntity
 		}
 	}
 	
+	
+	public function updateTags()
+	{
+		foreach($this->tags as $tag)
+		{
+			$tag->setMedia($this);
+		}
+	}	
 	
 }

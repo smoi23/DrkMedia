@@ -7,7 +7,10 @@
             <link href="{{ app.request.basepath }}/css/base.css" type="text/css" rel="stylesheet" />
         {% endblock %}
         <link rel="shortcut icon" href="{{ app.asset_path }}/favicon.ico" />
-    </head>
+			{% block javascript %}
+				<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+			{% endblock %}
+	    </head>
     <body>
 		<section id="container">
 			{% block container %} {% endblock %}

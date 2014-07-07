@@ -1,0 +1,25 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}Upload{% endblock%}
+{% block javascript %}
+	{{ parent() }}
+	<script src="{{ app.request.basepath }}/js/form.js"></script>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="{{ app.request.basepath }}/css/form.css" type="text/css" rel="stylesheet" />
+{% endblock %}
+
+{% block content %}
+
+<form id="form_edit" action="{{ post_url }}" method="POST" {{ form_enctype(form) }}>
+      <fieldset>
+       <legend>{{title}}</legend>
+	    <h1>Main</h1>
+	    {% form_theme form 'Form/form_edit_layout.html.twig' %}
+		  {{ form_widget(form) }}
+	     </fieldset>
+</form> 
+
+{% endblock %}    

@@ -6,13 +6,27 @@
 
 <article class="media">
     <header>
-        <div class="date"><time datetime="{{ media.publicDate|date('c') }}">{{ media.publicDate|date('l, j F, Y') }}</time></div>
-        <h2>{{ media.title }}</h2>
+        <h2>{{ media.filename }}</h2>
+        <div id="date">Modified: <time datetime="{{ val.modified|date('c') }}">{{ val.modified|date('l, j F, Y, H:i') }}</time></div>
+	    <div id="admin">
+	    <a href="{{ path('media/edit', {'id': media.id}) }}">[Edit]</a>
+	    </div>
     </header>
     <div>
+   	<h1>Main</h1>
     {% for key,val in props %}
         <div>{{ key }}: {{ val }}</div>
     {% endfor %}
+    
+   	<h1>Details</h1>
+    {% for detail in details %}
+    	<div style="margin-bottom:1em;">
+	    {% for key,val in detail %}
+    	    <div>{{ key }}: {{ val }}</div>
+	    {% endfor %}
+		</div>
+    {% endfor %}
+    
     </div>
     <div id="admin">
     <a href="{{ path('media/edit', {'id': media.id}) }}">[Edit]</a>

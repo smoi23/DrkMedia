@@ -8,7 +8,7 @@
 	    {% for val in props %}
 		    <div id="entry">
 	        <a href="{{ path('media/show') }}/{{ val.id }}">{{ val.id }}: {{ val.filename }}</a>
-	        <div class="date"><time datetime="{{ val.publicDate|date('c') }}">{{ val.publicDate|date('l, j F, Y') }}</time></div>
+	        <div class="date">Modified: <time datetime="{{ val.modified|date('c') }}">{{ val.modified|date('l, j F, Y, H:i') }}</time></div>
 	        <p></p>
     		</div>
 	    {% endfor %}

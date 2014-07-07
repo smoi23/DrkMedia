@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Doctrine\DBAL\Schema\Table;
+
 
 use Silex\Provider\FormServiceProvider;
 
@@ -17,6 +17,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\User;
 
 
+use Doctrine\DBAL\Schema\Table;
 use Doctrine\Common\Cache\ApcCache;
 use Doctrine\Common\Cache\ArrayCache;
 
@@ -86,7 +87,11 @@ $app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 
 $app->register(new Silex\Provider\TwigServiceProvider(), array(
 		'twig.path' => __DIR__.'/Resources/views',
+		'twig.form.resources'   => __DIR__.'/Resources/form',
 ));
+
+// 'twig.form.templates' => array(__DIR__.'/Resources/form/form_edit_layout.html.twig'),
+
 
 // prevent weird error
 function dummy_trans($str) {
