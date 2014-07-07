@@ -75,6 +75,23 @@ class MediaEntity
      **/	
 	protected $tags;
 	
+	private $fileInfoMapping = array( 	'name' => 'name',
+										'titleA' => 'titleA',
+										'titleB' => 'titleB',
+										'subTitle' => 'subtitle',
+										'wwv' => 'wwv',
+										'album' => 'album',
+										'work' => 'work',
+										'trackNumber' => 'trackNumber',
+										'trackNumberMax' => 'trackNumberMax',
+										'albumNumber' => 'albumNumber',
+										'albumNumberMax' => 'albumNumberMax',
+										'signature' => 'signature',
+										'time' => 'time',
+										'label' => 'label',
+										'location' => 'location');
+	
+	
 	public function __construct()
 	{
 		$this->initialize();		
@@ -294,12 +311,12 @@ class MediaEntity
 	
 	public function parseFileInfo($fileInfo)
 	{
-		// var_dump($fileInfo);
-		// echo $fileInfo['album'][0];
-		
-		if (isset($fileInfo['album']))
-		{
-			$this->album = $fileInfo['album'][0];
+		foreach ($this->fileInfoMapping as $key => $keyFile)		
+		{		
+			if (isset($fileInfo[$keyFile]))
+			{
+				$this->$key = $fileInfo[$keyFile][0];
+			}
 		}
 	}
 
